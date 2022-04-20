@@ -1,3 +1,13 @@
+# data files
+data/cord_19_embeddings/
+data/document_parses/
+data/Kaggle/
+data/metadata.readme
+data/COVID.DATA.LIC.AGMT.pdf
+data/json_schema.txt
+data/minidataset
+data/minidataset/*.json
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
