@@ -6,10 +6,29 @@ import pandas as pd
 
 DATASET_PATH = 'data/'
 METADATA_PATH = 'data/metadata.csv'
-MINI_DATASET_JSON_PATH = 'data/document_parses/minidataset'
+MINI_DATASET_JSON_PATH = 'data/minidataset/'
+MINI_DATASET = 'data/covid_20k_df.csv'
+SIZE = 20000
 
+def load_create_dataset()->pd.DataFrame:
+    if os.path.isfile(MINI_DATASET):
+        df = pd.read_csv(MINI_DATASET)
+        print(f'loaded {MINI_DATASET}')
+        return df
+    else:
+        metadata = load_metadata()
+        print('loaded metadata')
 
-def load_metadata(metadata_path: str = METADATA_PATH, num_of_papers: int = 27000) -> pd.DataFrame:
+        move_files(metadata)
+        print('created `minidataset` folder')
+
+        papers = cotools.Paperset(MINI_DATASET_JSON_PATH)
+        df = load_papers_into_df(papers, size=SIZE)
+        df.to_csv(MINI_DATASET, index=False)
+        print(f'saved the final df to {MINI_DATASET}')
+        return df
+
+def load_metadata(metadata_path: str = METADATA_PATH, num_of_papers: int = 30000) -> pd.DataFrame:
     """
     Load Initial Amount of metadata papers.
     :param metadata_path: Path to metadata.
@@ -37,13 +56,19 @@ def move_files(df: pd.DataFrame,
     :param mini_dataset_json_path: new dataset path
     :return: None
     """
+    if not os.path.isdir(mini_dataset_json_path):
+        os.mkdir(mini_dataset_json_path)
+
     for path in df['pdf_json_files'].values:
-        old_path = os.path.join(dataset_path, path)
-        new_path = mini_dataset_json_path + old_path[29:]
+        old_path = dataset_path + path
+        new_path = mini_dataset_json_path + old_path.split('/')[-1]
         try:
             shutil.copyfile(old_path, new_path)
+
         except:
             continue
+
+
 
 
 def load_papers_into_df(data: cotools.Paperset, size: int = 20000) -> pd.DataFrame:
